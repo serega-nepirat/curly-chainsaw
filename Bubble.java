@@ -92,6 +92,9 @@ public class Bubble {
 
                         int[] arrayForInsertion = Arrays.copyOf(originalArray, originalArray.length);
                         int[] arrayForSelection = Arrays.copyOf(originalArray, originalArray.length);
+                        int[] arrayForMerge = Arrays.copyOf(originalArray, originalArray.length);
+                        int[] arrayForCounting = Arrays.copyOf(originalArray, originalArray.length);
+
                         long startInsertion = System.nanoTime();
                         insertionSort(arrayForInsertion);
                         long endInsertion = System.nanoTime();
@@ -100,6 +103,14 @@ public class Bubble {
                         selectionSort(arrayForSelection);
                         long endSelection = System.nanoTime();
                         long durationSelection = endSelection - startSelection;
+                        long startMerge = System.nanoTime();
+                        mergeSort(arrayForMerge, 0, arrayForMerge.length - 1);
+                        long endMerge = System.nanoTime();
+                        long durationMerge = endMerge - startMerge;
+                        long startCounting = System.nanoTime();
+                        countingSort(arrayForCounting);
+                        long endCounting = System.nanoTime();
+                        long durationCounting = endCounting - startCounting;
                         System.out.println("Сортування вставками");
                         if (size <= 20) {
                             System.out.println("Відсортований масив: " + Arrays.toString(arrayForInsertion));
@@ -111,6 +122,18 @@ public class Bubble {
                             System.out.println("Відсортований масив: " + Arrays.toString(arrayForSelection));
                         }
                         System.out.printf("Час виконання: %.4f мс (%d нс) \n", durationSelection / 1000000.0, durationSelection);
+
+                        System.out.println("Сортування злиттям");
+                        if (size <= 20) {
+                            System.out.println("Відсортований масив: " + Arrays.toString(arrayForMerge));
+                        }
+                        System.out.printf("Час виконання: %.4f мс (%d нс) \n", durationMerge / 1000000.0, durationMerge);
+
+                        System.out.println("Сортування підрахунками");
+                        if (size <= 20) {
+                            System.out.println("Відсортований масив: " + Arrays.toString(arrayForCounting));
+                        }
+                        System.out.printf("Час виконання: %.4f мс (%d нс) \n", durationCounting / 1000000.0, durationCounting);
                         break;
 
                     case 0:
@@ -151,6 +174,81 @@ public class Bubble {
             int temp = array[minIndex];
             array[minIndex] = array[i];
             array[i] = temp;
+        }
+    }
+
+    public static void mergeSort(int[] array, int left, int right) {
+        if (left < right) {
+            int middle = left + (right - left) / 2;
+
+            mergeSort(array, left, middle);
+            mergeSort(array, middle + 1, right);
+
+            merge(array, left, middle, right);
+        }
+    }
+
+    private static void merge(int[] array, int left, int middle, int right) {
+        int n1 = middle - left + 1;
+        int n2 = right - middle;
+        int[] leftArray = new int[n1];
+        int[] rightArray = new int[n2];
+        for (int i = 0; i < n1; ++i) {
+            leftArray[i] = array[left + i];
+        }
+        for (int j = 0; j < n2; ++j) {
+            rightArray[j] = array[middle + 1 + j];
+        }
+
+        int i = 0, j = 0;
+        int k = left;
+        while (i < n1 && j < n2) {
+            if (leftArray[i] <= rightArray[j]) {
+                array[k] = leftArray[i];
+                i++;
+            } else {
+                array[k] = rightArray[j];
+                j++;
+            }
+            k++;
+        }
+
+        while (i < n1) {
+            array[k] = leftArray[i];
+            i++;
+            k++;
+        }
+
+        while (j < n2) {
+            array[k] = rightArray[j];
+            j++;
+            k++;
+        }
+    }
+
+    public static void countingSort(int[] array) {
+        if (array.length == 0) {
+            return;
+        }
+
+        int max = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if (array[i] > max) {
+                max = array[i];
+            }
+        }
+
+        int[] count = new int[max + 1];
+        for (int i = 0; i < array.length; i++) {
+            count[array[i]]++;
+        }
+
+        int index = 0;
+        for (int i = 0; i <= max; i++) {
+            while (count[i] > 0) {
+                array[index++] = i;
+                count[i]--;
+            }
         }
     }
 }
