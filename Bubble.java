@@ -94,23 +94,33 @@ public class Bubble {
                         int[] arrayForSelection = Arrays.copyOf(originalArray, originalArray.length);
                         int[] arrayForMerge = Arrays.copyOf(originalArray, originalArray.length);
                         int[] arrayForCounting = Arrays.copyOf(originalArray, originalArray.length);
+                        int[] arrayForQuick = Arrays.copyOf(originalArray, originalArray.length);
 
                         long startInsertion = System.nanoTime();
                         insertionSort(arrayForInsertion);
                         long endInsertion = System.nanoTime();
                         long durationInsertion = endInsertion - startInsertion;
+
                         long startSelection = System.nanoTime();
                         selectionSort(arrayForSelection);
                         long endSelection = System.nanoTime();
                         long durationSelection = endSelection - startSelection;
+
                         long startMerge = System.nanoTime();
                         mergeSort(arrayForMerge, 0, arrayForMerge.length - 1);
                         long endMerge = System.nanoTime();
                         long durationMerge = endMerge - startMerge;
+
                         long startCounting = System.nanoTime();
                         countingSort(arrayForCounting);
                         long endCounting = System.nanoTime();
                         long durationCounting = endCounting - startCounting;
+
+                        long startQuick = System.nanoTime();
+                        quickSort(arrayForQuick, 0, arrayForQuick.length - 1);
+                        long endQuick = System.nanoTime();
+                        long durationQuick = endQuick - startQuick;
+
                         System.out.println("Сортування вставками");
                         if (size <= 20) {
                             System.out.println("Відсортований масив: " + Arrays.toString(arrayForInsertion));
@@ -134,6 +144,12 @@ public class Bubble {
                             System.out.println("Відсортований масив: " + Arrays.toString(arrayForCounting));
                         }
                         System.out.printf("Час виконання: %.4f мс (%d нс) \n", durationCounting / 1000000.0, durationCounting);
+
+                        System.out.println("Швидке сортування (Quick Sort)");
+                        if (size <= 20) {
+                            System.out.println("Відсортований масив: " + Arrays.toString(arrayForQuick));
+                        }
+                        System.out.printf("Час виконання: %.4f мс (%d нс) \n", durationQuick / 1000000.0, durationQuick);
                         break;
 
                     case 0:
@@ -199,7 +215,6 @@ public class Bubble {
         for (int j = 0; j < n2; ++j) {
             rightArray[j] = array[middle + 1 + j];
         }
-
         int i = 0, j = 0;
         int k = left;
         while (i < n1 && j < n2) {
@@ -230,19 +245,16 @@ public class Bubble {
         if (array.length == 0) {
             return;
         }
-
         int max = array[0];
         for (int i = 1; i < array.length; i++) {
             if (array[i] > max) {
                 max = array[i];
             }
         }
-
         int[] count = new int[max + 1];
         for (int i = 0; i < array.length; i++) {
             count[array[i]]++;
         }
-
         int index = 0;
         for (int i = 0; i <= max; i++) {
             while (count[i] > 0) {
@@ -250,5 +262,31 @@ public class Bubble {
                 count[i]--;
             }
         }
+    }
+
+    public static void quickSort(int[] array, int low, int high) {
+        if (low < high) {
+            int pi = partition(array, low, high);
+            quickSort(array, low, pi - 1);
+            quickSort(array, pi + 1, high);
+        }
+    }
+    private static int partition(int[] array, int low, int high) {
+        int pivot = array[high];
+        int i = (low - 1);
+
+        for (int j = low; j < high; j++) {
+            if (array[j] <= pivot) {
+                i++;
+                int temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+        }
+        int temp = array[i + 1];
+        array[i + 1] = array[high];
+        array[high] = temp;
+
+        return i + 1;
     }
 }
